@@ -171,15 +171,15 @@ impl Snes {
         let mut chunks: Vec<Vec<u8>> = vec![];
         let mut num_chunks: Vec<usize> = vec![];
         for (address, len) in requests {
-            num_chunks.push(len.div_ceil(256));
-            for offset in (0..len).step_by(256) {
+            num_chunks.push(len.div_ceil(Self::MAX_REQUEST_LEN));
+            for offset in (0..len).step_by(Self::MAX_REQUEST_LEN) {
                 let address = (address.wrapping_add(offset as u32)).to_le_bytes();
                 chunks.push(vec![
                     Command::Read as u8,
                     address[0],
                     address[1],
                     address[2],
-                    (len - offset).min(255) as u8,
+                    (len - offset).min(Self::MAX_REQUEST_LEN) as u8,
                 ]);
             }
         }
